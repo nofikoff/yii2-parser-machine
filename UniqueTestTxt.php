@@ -4,7 +4,7 @@
  */
 
 
-namespace app\models;
+namespace nofikoff\parsermachine;
 
 use DotPack\PhpBoilerPipe;
 //use Yii;
