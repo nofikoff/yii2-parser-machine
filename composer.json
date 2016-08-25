@@ -1,0 +1,15 @@
+{
+    "name": "nofikoff/yii2-parser-machine",
+    "description": "test",
+    "version": "v1.7",
+    "license": "test",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+		"Nofikoff\\HtmlParser\\": "app/models",
+		"Nofikoff\\UniqueTestTxt\\": "app/models",
+		"Nofikoff\\BezierCurve\\": "app/models",
+	}
+
+    }
+}
