@@ -3,7 +3,7 @@
  * by Novikov.ua 2016
  */
 
-namespace app\models;
+namespace nofikoff\parsermachine;
 
 use DotPack\PhpBoilerPipe;
 //use Yii;
