@@ -6,9 +6,9 @@
     "require": {},
     "autoload": {
         "psr-4": {
-		"Nofikoff\\HtmlParser\\": "app/models",
-		"Nofikoff\\UniqueTestTxt\\": "app/models",
-		"Nofikoff\\BezierCurve\\": "app/models",
+		"Nofikoff\\HtmlParser\\",
+		"Nofikoff\\UniqueTestTxt\\",
+		"Nofikoff\\BezierCurve\\"
 	}
 
     }
