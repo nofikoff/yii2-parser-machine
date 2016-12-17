@@ -1,13 +1,10 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: Arnoldus
- * Date: 17.12.2016
- * Time: 1:35
- * собрал по кускам в сети
- *
+ * by Novikov.ua 2016
+ * Набор функций для разбора HTMД документов
  */
 
+namespace nofikoff\parsermachine;
 
 mb_internal_encoding("UTF-8");
 
