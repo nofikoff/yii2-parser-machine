@@ -6,6 +6,7 @@
 
 namespace nofikoff\parsermachine;
 
+
 mb_internal_encoding("UTF-8");
 
 class DetectUnicodeRanges
