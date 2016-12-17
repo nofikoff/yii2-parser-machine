@@ -81,10 +81,6 @@ class UniqueTestTxt
             $str = $this->get_str_with_n_max_words($str);
             $out_page = $this->google->get_page($str);
 
-            // отоладка
-            print_r($out_page);
-            exit;
-
             if ($out_page['error']) {
                 $result['error'] = true;
                 $result['desc'] = $out_page['desc'];
