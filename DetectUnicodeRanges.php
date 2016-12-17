@@ -8,13 +8,7 @@
  *
  */
 
-
-
 mb_internal_encoding("UTF-8");
-
-//echo header( "Content-Type: text/html;charset=UTF-8", true );
-
-
 
 class DetectUnicodeRanges
 {
