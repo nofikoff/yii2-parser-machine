@@ -76,7 +76,6 @@ class UniqueTestTxt
         $result['error'] = false;
         $result['desc'] = '';
 
-
         foreach ($list_str as $str) {
             $str = $this->get_str_with_n_max_words($str);
             $out_page = $this->google->get_page($str);
