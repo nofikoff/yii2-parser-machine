@@ -1,10 +1,12 @@
 <?php
 /**
  * by Novikov.ua 2016
+ * Набор функций для разбора HTMД документов
  */
 
 namespace nofikoff\parsermachine;
 
+use app\controllers\WaybackMachineController;
 use DotPack\PhpBoilerPipe;
 
 //use Yii;
@@ -40,7 +42,7 @@ class HtmlParser
     }
 
 
-    public function html_pars()
+    public function html_pars($more_jently)
     {
 
 
@@ -50,9 +52,9 @@ class HtmlParser
         $result['mdl_paragraf'] = 0;
 
 
-
         $result['lang'] = '';
         $result['title'] = '';
+        $result['keywords_meta'] = '';
         $result['description_parser'] = '';
         $result['h1'] = '';
 
@@ -63,35 +65,47 @@ class HtmlParser
             $result['error'] = 1;
             $result['description_parser'] = 'zerro size page AI';
             $result['result'] = '';
+            return $result;
 
         } elseif (preg_match('/invalid request/i', $this->content)) {
             $result['status'] = 'parsered_notext';
             $result['error'] = 1;
             $result['description_parser'] = 'Message: invalid request in AI';
             $result['result'] = '';
+            return $result;
 
         } else if (preg_match('/t have that page archived/i', $this->content)) {
             $result['status'] = 'parsered_notext';
             $result['error'] = 1;
             $result['description_parser'] = 'AI NO this page archived';
             $result['result'] = '';
+            return $result;
 
         } else if (preg_match('/The machine that serves this file is down/i', $this->content)) {
             $result['status'] = 'temporary_error';
             $result['error'] = 1;
             $result['description_parser'] = 'Message AI: that serves this file is down Temporary ERROR';
             $result['result'] = '';
+            return $result;
+
         }
 
 
         // основное мсясо
         // основное мсясо
         // основное мсясо
+        //занес в нутрь след функции см ниже
+        //$ae = new PhpBoilerPipe\ArticleExtractor();
+        //$out = $ae->getContent($this->content);
+        // ЭТО ПИЗДЕЦ
+        // костыль что парсит и сксчивает картинки АРХИВА ИНТЕРНЕТ (не путать 008 что скачиват недостающие кратинки ГУГЛ КАРТИНКИ)
+        // костыль что парсит и сксчивает картинки АРХИВА ИНТЕРНЕТ (не путать 008 что скачиват недостающие кратинки ГУГЛ КАРТИНКИ)
+        // костыль что парсит и сксчивает картинки АРХИВА ИНТЕРНЕТ (не путать 008 что скачиват недостающие кратинки ГУГЛ КАРТИНКИ)
+        // костыль что парсит и сксчивает картинки АРХИВА ИНТЕРНЕТ (не путать 008 что скачиват недостающие кратинки ГУГЛ КАРТИНКИ)
+        $out = WaybackMachineController::parseTxtArticleAndImagesAI($this->content, md5($this->content), $more_jently);
 
-        $ae = new PhpBoilerPipe\ArticleExtractor();
-        $out = $ae->getContent($this->content);
 
-        $out = str_replace(" \r\n", "\r\n", $out);
+//        $out = str_replace(" \r\n", "\r\n", $out);
 //        $out = str_replace("\r\n\r\n\r\n", "\r\n\r\n",$out);
 //        $out = str_replace("\r\r\r", "\r\r",$out);
 //        $out = str_replace("\n\n\n", "\n\n",$out);
@@ -155,7 +169,15 @@ class HtmlParser
         //        echo "Максимальный абзац длина: " . max($lengths) . "\n";
         //        echo "Средний абзац длина: " . round($bezie_middle) . "\n";
         //        echo $out . "\n";
-        if (mb_strlen($out) < 1500) {
+        //TODO: ВЫнести в парамсы
+        if ($more_jently)
+            $min_length = 400;
+        else
+            $min_length = 1500;
+        //
+
+
+        if (mb_strlen($out) < $min_length) {
             $result['status'] = 'parsered_notext';
             $result['error'] = 1;
             $result['description_parser'] = 'Меньше 1500';
@@ -163,22 +185,21 @@ class HtmlParser
             $result['mdl_paragraf'] = round($bezie_middle);
 
             // если средний по бие абзац меньше 200 знаков это мусорная страница
-        } else if (round($bezie_middle) < 200) {
+        } else if (round($bezie_middle) < 200 AND !$more_jently) {
             $result['status'] = 'parsered_notext';
-            $result['description_parser'] = 'Это жидкий текст средний абзац меньше 200';
+            $result['description_error'] = 'Это жидкий текст средний абзац меньше 200';
             $result['error'] = 1;
             $result['max_paragraf'] = max($lengths);
             $result['mdl_paragraf'] = round($bezie_middle);
 
             // это хорошая статья
         } else {
-
-
             $result['lang'] = $this->detectTextLanguage($out);
 
 
             // языки офдтруем только русский и ангилсуйи
             if ($result['lang'] == 'not detected') {
+                $result['description_error'] = 'Язык НЕ определен';
                 $result['status'] = 'parsered_notext';
                 $result['error'] = 1;
 
@@ -194,6 +215,7 @@ class HtmlParser
 
 
             $result['title'] = $this->get_title();
+            $result['keywords_meta'] = json_encode($this->get_keywords());
             $result['description_parser'] = $this->get_description();
             $result['h1'] = $this->get_h1();
         }
@@ -206,10 +228,30 @@ class HtmlParser
     public function get_title()
     {
         $out = '';
-        if (preg_match('~<title>([^<]+)</title>~ui', $this->content, $d)) {
+        if (preg_match('~<title>([^<]+)</title>~uis', $this->content, $d)) {
             $out = $d[1];
         }
         return $out;
+    }
+
+    public function get_keywords()
+    {
+        $out = '';
+        //<meta name="Keywords" content="окна ПВХ, металлопластиковые окна, деревянные окна, алюминиевые окна, металлопластиковые двери, пластиковые окна, монтаж окон, изготовление окон, доставка окон, производство окон"/>
+        //<meta id="MetaKeywords" name="KEYWORDS" content="Let’s Go, sustainable transport, sustainable travel, bike, ride, cycle, walk, bus, biking, cycling, riding, walking, bussing, maps, pathways, walkways, BDO Cyclist Skills, Get Going, cycle lanes, street project, bus timetable, travel plan,DotNetNuke,DNN" />
+        if (preg_match('~<meta[^>]+name\s*=\s*[\'"]{1}KEYWORDS[\'"]{1}[^>]+CONTENT=([^>]+)~uis', $this->content, $d)) {
+            $out = $d[1];
+        }
+
+        $a = explode(',', trim($out, '\'" /'));
+        $a = array_map(
+            function ($a) {
+                return trim($a, ", ");
+            },
+            $a
+        );
+
+        return $a;
     }
 
     public function get_description()
@@ -290,7 +332,16 @@ class HtmlParser
             }
         }
 
-        //print_r($counter);
+        print_r($counter);
+        echo mb_strlen($text);
+
+        // костыль
+        // мы определяем тут английский
+        // минимум 1500 знаков текст
+        //на глаз додно бы ть минимум 30-40 англ фрагментов а не 5 англ фрагментов как в сиспанкских текстах - они ломают нам всю картину
+        if ($counter['en'] > round(mb_strlen($text) / 40)) return 'en';
+        if ($counter['ru'] > 10) return 'ru';
+        return 'not detected';
 
 
         // get max counter value
@@ -315,7 +366,6 @@ class HtmlParser
             }
         }
 
-        print_r($counter);
 
         return $default;
     }
@@ -332,4 +382,41 @@ class HtmlParser
         return null;
     }
 
+
+    static function remove_html_images($html)
+    {
+        return preg_replace("~<img\s[^>]*?src\s*=\s*['\"]([^'\"]*?)['\"][^>]*?>~uis", '', $html);
+    }
+
+    static function only_latina_remove_no_utf8_chars_spaces($Str)
+    {
+        $StrArr = str_split($Str);
+        $NewStr = '';
+        foreach ($StrArr as $Char) {
+            $CharNo = ord($Char);
+            if ($CharNo == 163) {
+                $NewStr .= $Char;
+                continue;
+            } // keep £
+            if ($CharNo > 31 && $CharNo < 127) {
+                $NewStr .= $Char;
+            }
+        }
+        return $NewStr;
+    }
+
+    static function sting_contents_no_latina($Str)
+    {
+        $StrArr = str_split($Str);
+        $NewStr = '';
+        foreach ($StrArr as $Char) {
+            $CharNo = ord($Char);
+            if ($CharNo < 32 OR $CharNo > 126) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
+
