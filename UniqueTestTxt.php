@@ -80,6 +80,11 @@ class UniqueTestTxt
         foreach ($list_str as $str) {
             $str = $this->get_str_with_n_max_words($str);
             $out_page = $this->google->get_page($str);
+
+            // отоладка
+            print_r($out_page);
+            exit;
+
             if ($out_page['error']) {
                 $result['error'] = true;
                 $result['desc'] = $out_page['desc'];
@@ -93,17 +98,18 @@ class UniqueTestTxt
                 $result['desc'] = $num_result['desc'];
                 return $result;
             }
-
+            // отоладка
+            //print_r($num_result);
 
             $result['ResultPhrases'][] = $str;
             $result['ResultFound'][] = $num_result['result'];
-            if ($num_result > 0) {
+            if ($num_result['result'] > 0) {
                 $index = $index + $num_result['result'];
                 $total++;
             }
         }
 
-        if ($total > 0) {
+        if ($total != 0) {
             $result['level_uniq'] = round((1 / ($index / $total)), 2);
             $result['desc'] = 'Уникальность по Гуглу';
         } else {
