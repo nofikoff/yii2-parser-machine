@@ -12,7 +12,6 @@ mb_internal_encoding("UTF-8");
 
 class DetectUnicodeRanges
 {
-
     public $list_lang = [];
     //rnage from http://www.google.com/jsapi
     //rnage from http://www.google.com/jsapi
