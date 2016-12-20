@@ -8,6 +8,8 @@
 // также умеет выделять отласль текста
 // названия капмания и ФИО персоналия
 
+namespace nofikoff\parsermachine;
+
 
 class CalaisTagExtractor
 {
@@ -76,6 +78,8 @@ class CalaisTagExtractor
                     $result[] = $t['name'];
                 }
             }
+
+            if (!sizeof($result)) return ['notag'];
             return $result;
         }
     }
