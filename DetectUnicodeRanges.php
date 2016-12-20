@@ -411,7 +411,17 @@ class DetectUnicodeRanges
         foreach ($hexes as $hex) {
             $hex = '0x' . $hex;
             foreach ($this->range as $name_sr => $subrange) {
-                if (($hex >= $subrange[0]) && ($hex <= $subrange[1]) && $name_sr != 'Basic Latin') {
+                if (
+                    ($hex >= $subrange[0])
+                    && ($hex <= $subrange[1])
+                    && (
+                        $name_sr != 'Basic Latin'
+                        &&
+                        $name_sr != 'General Punctuation'
+                        &&
+                        $name_sr != 'Latin-1 Supplement'
+                    )
+                ) {
                     //echo $this->entityToUTF8(hexdec($hex)) . ' - ' . $name_sr . ' '.$hex.'   -> '.$subrange[0].'+'.$subrange[1].'<br />';
                     $this->list_lang[$name_sr] = 1;
                     $flag_result = 1;
@@ -422,9 +432,6 @@ class DetectUnicodeRanges
 
         }
     }
-
-
-
 
 
 }

@@ -80,9 +80,9 @@ class UniqueTestTxt
             $str = $this->get_str_with_n_max_words($str);
             $out_page = $this->google->get_page($str);
 
-            if ($out_page['error']) {
+            if ($out_page['error'] OR !$out_page['result']) {
                 $result['error'] = true;
-                $result['desc'] = $out_page['desc'];
+                if (isset($out_page['desc'])) $result['desc'] = $out_page['desc'];
                 return $result;
             }
 
