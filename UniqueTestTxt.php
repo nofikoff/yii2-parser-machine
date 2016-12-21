@@ -76,13 +76,25 @@ class UniqueTestTxt
         $result['error'] = false;
         $result['desc'] = '';
 
+
         foreach ($list_str as $str) {
             $str = $this->get_str_with_n_max_words($str);
+            $this->google->use_antigate = 1;
+            $this->google->use_my_external_php_proxy = 1;
             $out_page = $this->google->get_page($str);
+            sleep(1);
 
-            if ($out_page['error'] OR !$out_page['result']) {
+
+//            $out_page['result'] = preg_replace('/(<script[^>]*>.*?<\/script>)/siu', '', $out_page['result']);
+//            $out_page['result'] = str_replace('<script', '<', $out_page['result']);
+//            $out_page['result'] = str_replace('<\script', '<\\', $out_page['result']);
+//            print_r($out_page);
+//            exit;
+
+
+            if ($out_page['error']) {
                 $result['error'] = true;
-                if (isset($out_page['desc'])) $result['desc'] = $out_page['desc'];
+                $result['desc'] = $out_page['description'];
                 return $result;
             }
 
@@ -90,11 +102,10 @@ class UniqueTestTxt
             $num_result = $this->google->parse_number_finded_results($out_page['result']);
             if ($num_result['error']) {
                 $result['error'] = true;
-                $result['desc'] = $num_result['desc'];
+                $result['desc'] = $num_result['description'];
                 return $result;
             }
-            // отоладка
-            //print_r($num_result);
+
 
             $result['ResultPhrases'][] = $str;
             $result['ResultFound'][] = $num_result['result'];
@@ -104,11 +115,12 @@ class UniqueTestTxt
             }
         }
 
-        if ($total != 0) {
-            $result['level_uniq'] = round((1 / ($index / $total)), 2);
+        if ($total > 0) {
+            $result['level_uniq'] = round(100 * (1 / ($index / $total)));
             $result['desc'] = 'Уникальность по Гуглу';
         } else {
-            $result['level_uniq'] = "-1";
+            //$result['level_uniq'] = "-1";
+            $result['level_uniq'] = 101;
             $result['desc'] = "Абсолютно уникальный текст, не встречается в Гугле";
         }
 
