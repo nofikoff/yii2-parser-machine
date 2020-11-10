@@ -1,1 +1,2 @@
-# yii2-parser-machine !!!
+# yii2-parser-machine 
+набор вспомгательных функций
